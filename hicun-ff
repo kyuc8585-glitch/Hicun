@@ -1,0 +1,394 @@
+# Hicunh<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HICUN FF v1.1</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        
+        body {
+            background: linear-gradient(135deg, #050505, #101828, #1a2c47, #101828, #050505);
+            background-size: 400% 400%;
+            animation: bgChuyenDong 12s ease infinite;
+            min-height: 100vh; padding: 15px; color: #fff;
+            position: relative; overflow-x: hidden;
+        }
+        @keyframes bgChuyenDong {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 🍂 LÁ RƠI ĐẸP */
+        .leaf {
+            position: fixed; top: -50px;
+            font-size: 24px; pointer-events: none; z-index: 1;
+            animation: leafFall linear infinite;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+        @keyframes leafFall {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            20% { transform: translateX(15px) translateY(20vh) rotate(90deg); }
+            40% { transform: translateX(-10px) translateY(40vh) rotate(180deg); }
+            60% { transform: translateX(20px) translateY(60vh) rotate(270deg); }
+            80% { transform: translateX(-15px) translateY(80vh) rotate(360deg); }
+            100% { transform: translateX(10px) translateY(110vh) rotate(450deg); opacity: 0.3; }
+        }
+
+        /* 🏐 BÓNG KÍNH TRẮNG */
+        .glass-ball {
+            position: fixed; width: 60px; height: 60px; border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.95), rgba(200,220,255,0.4), rgba(100,180,255,0.15));
+            box-shadow: 0 0 25px rgba(255,255,255,0.6), 0 0 50px rgba(200,220,255,0.3);
+            animation: bóngBay 6s linear infinite;
+            z-index: 1; pointer-events: none;
+        }
+        @keyframes bóngBay {
+            0% { transform: translate(-50px, -50px) rotate(0deg); }
+            25% { transform: translate(calc(100vw - 100px), 20vh) rotate(180deg); }
+            50% { transform: translate(calc(80vw), calc(90vh - 100px)) rotate(360deg); }
+            75% { transform: translate(10vw, calc(70vh)) rotate(540deg); }
+            100% { transform: translate(-50px, -50px) rotate(720deg); }
+        }
+
+        /* ⚙️ CÀI ĐẶT */
+        .sidebar {
+            position: fixed; top: 0; left: -340px;
+            width: 340px; height: 100vh;
+            background: rgba(10,15,30,0.96);
+            border-right: 2px solid #1e90ff;
+            padding: 20px;
+            transition: left 0.3s ease;
+            z-index: 10000;
+            overflow-y: auto;
+        }
+        .sidebar.open { left: 0; }
+        .sidebar-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid #1e90ff;
+        }
+        .sidebar-title { font-size: 22px; font-weight: bold; color: #00bfff; text-shadow: 0 0 10px #00bfff; }
+        .close-btn { background: none; border: none; color: #fff; font-size: 28px; cursor: pointer; }
+        .close-btn:hover { color: #ff6b6b; transform: scale(1.2); }
+
+        .setting-section { margin-bottom: 20px; }
+        .section-heading {
+            font-size: 15px; font-weight: bold; color: #87ceeb;
+            margin-bottom: 10px; padding-left: 8px; border-left: 3px solid #1e90ff;
+        }
+        .setting-item { margin-bottom: 14px; }
+        .setting-label { display: block; margin-bottom: 6px; color: #add8e6; font-size: 14px; }
+        .setting-input, .setting-select {
+            width: 100%; padding: 10px 12px; border-radius: 8px;
+            background: rgba(30,144,255,0.1); color: #fff;
+            border: 2px solid #1e90ff; outline: none;
+        }
+        .setting-slider {
+            width: 100%; height: 8px; border-radius: 4px;
+            background: linear-gradient(90deg, #0066cc, #00bfff);
+            -webkit-appearance: none; outline: none;
+        }
+        .setting-slider::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%;
+            background: #fff; border: 3px solid #1e90ff; cursor: pointer;
+        }
+        .slider-val { color: #00bfff; font-weight: bold; }
+
+        .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; }
+        .toggle {
+            width: 50px; height: 26px; border-radius: 13px;
+            background: rgba(30,144,255,0.2); border: 2px solid #1e90ff;
+            position: relative; cursor: pointer; transition: 0.3s;
+        }
+        .toggle.on { background: #1e90ff; box-shadow: 0 0 15px #1e90ff; }
+        .toggle::after {
+            content: ''; position: absolute; top: 2px; left: 2px;
+            width: 18px; height: 18px; border-radius: 50%; background: #fff; transition: 0.3s;
+        }
+        .toggle.on::after { transform: translateX(22px); }
+
+        .color-preview {
+            width: 100%; height: 36px; border-radius: 8px; margin-top: 8px;
+            border: 2px solid #fff; transition: background 0.3s;
+        }
+
+        .save-btn, .reset-btn {
+            width: 100%; padding: 12px; border-radius: 10px; border: none;
+            font-weight: bold; cursor: pointer; font-size: 15px;
+        }
+        .save-btn {
+            background: linear-gradient(90deg, #0066cc, #1e90ff, #00bfff); color: #fff;
+            margin-top: 5px;
+        }
+        .reset-btn {
+            background: transparent; color: #ff6b6b; border: 2px solid #ff6b6b;
+            margin-top: 10px;
+        }
+
+        .container { max-width: 500px; margin: 0 auto; position: relative; z-index: 2; transition: margin-left 0.3s ease; }
+        .container.shifted { margin-left: 340px; }
+
+        /* 🔒 MÀN HÌNH KHÓA */
+        .lock-screen {
+            position: fixed; inset: 0; background: linear-gradient(135deg, #000, #0f172a, #000);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 9999; padding: 20px;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+        .lock-screen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+        .ff-logo {
+            width: 140px; height: 140px; border-radius: 20px;
+            background: linear-gradient(135deg, #1e90ff, #00bfff, #1e90ff);
+            animation: logoGrad 3s ease infinite;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 20px;
+            box-shadow: 0 0 30px #1e90ff;
+        }
+        .ff-logo span { font-size: 60px; font-weight: bold; color: #fff; }
+        @keyframes logoGrad { 0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;} }
+
+        .lock-title { font-size: 32px; font-weight: 900; text-shadow: 0 0 10px #1e90ff; margin-bottom: 30px; }
+        .lock-box {
+            background: rgba(15,23,42,0.9); padding: 30px; border-radius: 20px;
+            border: 2px solid #1e90ff; width: 100%; max-width: 320px;
+        }
+        .lock-label {
+            text-align: center; display: block; margin-bottom: 12px;
+            color: #87ceeb; font-size: 16px; font-weight: 600;
+        }
+        .lock-input {
+            width: 100%; padding: 15px; border-radius: 12px;
+            background: rgba(30,144,255,0.1); color: #fff;
+            border: 2px solid #1e90ff; font-size: 18px; text-align: center; outline: none;
+        }
+        .lock-input:focus { border-color: #00bfff; box-shadow: 0 0 15px #1e90ff; }
+        .lock-btn {
+            width: 100%; padding: 15px; margin-top: 15px;
+            background: linear-gradient(90deg, #0066cc, #1e90ff, #00bfff, #1e90ff, #0066cc);
+            background-size: 300% 100%; border: none; border-radius: 12px;
+            color: #fff; font-size: 18px; font-weight: bold; cursor: pointer;
+            animation: btnXanh 3s linear infinite;
+        }
+        @keyframes btnXanh { 0%{background-position:0 0;}100%{background-position:300% 0;} }
+        /* ==== ĐÃ SỬA: KEY SAI CHỈ NÓI "KEY CỦA BẠN SAI RỒI" ==== */
+        .lock-error { 
+            color: #ff6b6b; margin-top: 12px; text-align: center; 
+            display: none; font-weight: bold; font-size: 16px;
+        }
+
+        .version-tag { position: fixed; top: 10px; right: 10px; background: rgba(30,144,255,0.15); color: #1e90ff; padding: 4px 12px; border-radius: 20px; font-size: 13px; border: 1px solid #1e90ff; z-index: 10; }
+        .open-settings-btn { position: fixed; top: 10px; left: 10px; background: rgba(30,144,255,0.15); color: #fff; padding: 8px 12px; border-radius: 10px; border: 2px solid #1e90ff; cursor: pointer; z-index: 10; }
+
+        .ff-banner {
+            width: 100%; height: 120px; border-radius: 16px;
+            background: linear-gradient(90deg, #0066cc, #1e90ff, #00bfff, #1e90ff, #0066cc);
+            background-size: 300% 100%; animation: bannerDong 4s linear infinite;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 20px; border: 2px solid #1e90ff;
+        }
+        .ff-banner-text { font-size: 22px; font-weight: 900; }
+        @keyframes bannerDong { 0%{background-position:0 0;}100%{background-position:300% 0;} }
+
+        .main-content { display: none; }
+        .main-content.active { display: block; animation: hienLen 0.5s ease; }
+        @keyframes hienLen { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+
+        h1 { text-align: center; font-size: 24px; font-weight: 900; text-shadow: 0 0 10px #1e90ff; margin-bottom: 20px; }
+
+        .box { background: rgba(15,23,42,0.8); border-radius: 20px; padding: 20px; margin-bottom: 15px; border: 2px solid #1e90ff; }
+        label { display: block; margin-bottom: 8px; color: #add8e6; font-weight: 600; }
+        select, input[type="text"] {
+            width: 100%; padding: 14px; border-radius: 12px;
+            background: rgba(30,144,255,0.08); color: #fff;
+            border: 2px solid #1e90ff; margin-bottom: 15px; outline: none;
+        }
+        button.calc-btn {
+            width: 100%; padding: 16px; border-radius: 12px; border: none;
+            background: linear-gradient(90deg, #0066cc, #1e90ff, #00bfff, #1e90ff, #0066cc);
+            background-size: 300% 100%; color: #fff; font-size: 18px; font-weight: bold; cursor: pointer;
+            animation: btnXanh 3s linear infinite;
+        }
+
+        .device-name {
+            font-size: 18px; font-weight: bold; text-align: center; padding: 12px;
+            background: rgba(30,144,255,0.1); border-radius: 12px; border: 2px solid #1e90ff;
+            margin-bottom: 10px;
+        }
+        .dpi-real {
+            font-size: 18px; font-weight: bold; text-align: center; padding: 12px;
+            background: linear-gradient(90deg, rgba(30,144,255,0.2), rgba(0,191,255,0.2));
+            border-radius: 12px; border: 2px solid #00bfff; margin-bottom: 18px;
+        }
+        .dpi-real span { color: #00ffff; text-shadow: 0 0 8px #00ffff; }
+
+        .result { display: none; margin-top: 20px; }
+        .result.show { display: block; }
+
+        .section-title {
+            font-size: 18px; font-weight: bold; text-shadow: 0 0 10px #1e90ff;
+            margin: 15px 0; text-align: center; padding-bottom: 8px;
+            border-bottom: 2px solid #1e90ff;
+        }
+        .note { font-size: 13px; color: #87ceeb; text-align: center; margin-bottom: 15px; }
+
+        .nut-ban-box {
+            background: rgba(30,144,255,0.1); border-radius: 16px; padding: 15px;
+            border: 2px solid #00bfff; margin-bottom: 20px; text-align: center;
+        }
+        .nut-ban-preview {
+            width: 80px; height: 80px; border-radius: 50%;
+            background: linear-gradient(135deg, #ff4444, #ff6b6b);
+            display: flex; align-items: center; justify-content: center;
+            margin: 10px auto; box-shadow: 0 0 20px #ff4444; font-weight: bold;
+        }
+        .nut-ban-kichthuoc { font-size: 24px; font-weight: bold; color: #ff6b6b; }
+
+        .slider-group { margin-bottom: 16px; }
+        .slider-label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .slider-value { font-weight: bold; color: #00bfff; }
+        input[type="range"] {
+            -webkit-appearance: none; width: 100%; height: 12px; border-radius: 6px;
+            background: linear-gradient(90deg, #004488, #0066cc, #1e90ff, #00bfff); outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 28px; height: 28px; border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #fff, #1e90ff);
+            border: 3px solid #fff; cursor: pointer;
+        }
+
+        .dpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .dpi-card {
+            background: rgba(30,144,255,0.1); border-radius: 10px; padding: 12px;
+            border: 2px solid #1e90ff; text-align: center;
+        }
+        .dpi-card div { color: #00bfff; font-weight: bold; font-size: 18px; }
+
+        .guide-box {
+            background: rgba(15,23,42,0.8); border-radius: 14px; padding: 15px;
+            margin-top: 15px; border: 2px solid #1e90ff;
+        }
+        .guide-item { padding: 6px 0; color: #add8e6; font-size: 14px; }
+        .guide-item strong { color: #00bfff; }
+
+        .author {
+            text-align: center; margin-top: 30px; padding: 15px;
+            font-size: 15px; color: #87ceeb;
+            border-top: 2px solid rgba(30,144,255,0.3);
+        }
+        .author span { color: #00bfff; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <!-- 🍂 LÁ RƠI -->
+    <div id="leavesContainer"></div>
+
+    <!-- 🏐 BÓNG KÍNH TRẮNG -->
+    <div class="glass-ball"></div>
+    <div class="glass-ball"></div>
+    <div class="glass-ball"></div>
+    <div class="glass-ball"></div>
+
+    <!-- ⚙️ CÀI ĐẶT -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-title">⚙️ CÀI ĐẶT HỆ THỐNG</div>
+            <button class="close-btn" onclick="closeSidebar()">×</button>
+        </div>
+
+        <!-- 🎨 ĐỒ HỌA & GIAO DIỆN -->
+        <div class="setting-section">
+            <div class="section-heading">🎨 ĐỒ HỌA & GIAO DIỆN</div>
+            <div class="setting-item">
+                <label class="setting-label">Chủ đề màu chính</label>
+                <select class="setting-select" id="themeColor" onchange="doiMauChuDe()">
+                    <option value="blue" selected>🔵 Xanh dương</option>
+                    <option value="purple">🟣 Tím</option>
+                    <option value="green">🟢 Xanh lá</option>
+                    <option value="red">🔴 Đỏ đen</option>
+                    <option value="gold">🟡 Vàng kim</option>
+                </select>
+                <div class="color-preview" id="colorPreview" style="background:#1e90ff;"></div>
+            </div>
+            <div class="toggle-row">
+                <span class="setting-label">🍂 Hiệu ứng lá rơi</span>
+                <div class="toggle on" id="toggleLeaf" onclick="toggleSwitch('Leaf')"></div>
+            </div>
+            <div class="toggle-row">
+                <span class="setting-label">🏐 Bóng kính trắng</span>
+                <div class="toggle on" id="toggleBall" onclick="toggleSwitch('Ball')"></div>
+            </div>
+            <div class="toggle-row">
+                <span class="setting-label">✨ Ánh sáng viền</span>
+                <div class="toggle on" id="toggleGlow" onclick="toggleSwitch('Glow')"></div>
+            </div>
+        </div>
+
+        <!-- 📐 DPI & ĐỘ NHẠY -->
+        <div class="setting-section">
+            <div class="section-heading">📐 DPI & ĐỘ NHẠY</div>
+            <div class="setting-item">
+                <label class="setting-label">📱 Tên điện thoại của bạn</label>
+                <input type="text" class="setting-input" id="tenDienThoai" placeholder="Tự điền tên máy..." oninput="capNhatTenMay()">
+            </div>
+            <div class="setting-item">
+                <label class="setting-label">DPI tùy chỉnh: <span class="slider-val" id="dpiVal">Mặc định</span></label>
+                <input type="range" class="setting-slider" id="dpiCus" min="320" max="800" value="440" oninput="capNhatDPI()">
+            </div>
+            <div class="setting-item">
+                <label class="setting-label">Độ nhạy chung: <span class="slider-val" id="dnhayVal">100</span></label>
+                <input type="range" class="setting-slider" id="dnhayChung" min="50" max="200" value="100" oninput="dnhayVal.textContent=this.value">
+            </div>
+            <div class="toggle-row">
+                <span class="setting-label">Tự động lưu DPI</span>
+                <div class="toggle on" id="toggleAutoSave" onclick="toggleSwitch('AutoSave')"></div>
+            </div>
+        </div>
+
+        <!-- 🔊 ÂM THANH -->
+        <div class="setting-section">
+            <div class="section-heading">🔊 ÂM THANH</div>
+            <div class="toggle-row"><span>Âm thanh</span><div class="toggle" id="toggleSound" onclick="toggleSwitch('Sound')"></div></div>
+            <div class="setting-item"><label class="setting-label">Âm lượng: <span class="slider-val" id="volVal">70%</span></label><input type="range" class="setting-slider" id="volume" min="0" max="100" value="70" oninput="volVal.textContent=this.value+'%'"></div>
+        </div>
+
+        <!-- ⚡ HIỆU SUẤT -->
+        <div class="setting-section">
+            <div class="section-heading">⚡ HIỆU SUẤT</div>
+            <div class="setting-item"><label class="setting-label">Làm mượt: <span class="slider-val" id="smVal">Bình thường</span></label><input type="range" class="setting-slider" id="smooth" min="1" max="5" value="3" oninput="smVal.textContent=['Rất nhanh','Nhanh','Bình thường','Chậm','Rất chậm'][this.value-1]"></div>
+        </div>
+
+        <button class="save-btn" onclick="luuCaiDat()">💾 LƯU TẤT CẢ</button>
+        <button class="reset-btn" onclick="datLaiMacDinh()">🔄 ĐẶT LẠI MẶC ĐỊNH</button>
+    </div>
+
+    <!-- 🔒 MÀN HÌNH KHÓA -->
+    <div class="lock-screen" id="lockScreen">
+        <div class="ff-logo"><span>FF</span></div>
+        <div class="lock-title">HICUN FF</div>
+        <div class="lock-box">
+            <label class="lock-label">🔑 NHẬP KEY Ở ĐÂY</label>
+            <input type="password" class="lock-input" id="keyInput" placeholder="" autocomplete="off">
+            <button class="lock-btn" id="unlockBtn" onclick="kiemTraKey()">🔓 MỞ KHÓA</button>
+            <!-- ==== ĐÃ SỬA: CHỈ NÓI "KEY CỦA BẠN SAI RỒI" ==== -->
+            <div class="lock-error" id="lockError">❌ Key của bạn sai rồi</div>
+        </div>
+    </div>
+
+    <div class="version-tag">v1.1</div>
+    <button class="open-settings-btn" onclick="openSidebar()">⚙️ Cài đặt</button>
+
+    <div class="container" id="container">
+        <div class="main-content" id="mainContent">
+            <div class="ff-banner"><span style="font-size:32px;">🔥</span><span class="ff-banner-text">FREE FIRE — ĐỘ NHẠY BẮN ĐẦU</span><span style="font-size:32px;">🔥</span></div>
+            <h1>HICUN FF — TOOL BẮN ĐẦU</h1>
+
+            <div class="box">
+                <label>📱 CHỌN ĐIỆN THOẠI HOẶC TỰ ĐIỀN</label>
+                <select id="chonMay" onchange="if(this.value)tenDienThoai.value=this.selectedOptions[0].text;">
+                    <option value="">-- Chọn máy --</option>
+                    <optgroup label="SAMSUNG">
+                        <option value="A05">A05/A05s</option><option value="A15">A15/A16</option><option value="A24">A24/A25</option>
+                        <option value="A34">A34/A35</option><option value="A54">A54/A55</option><option value="S24">S2
